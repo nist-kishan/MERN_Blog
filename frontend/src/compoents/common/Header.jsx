@@ -10,7 +10,7 @@ import {
   LogOut,
   User,
 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -86,10 +86,10 @@ export default function Header() {
 
         <nav className={styles.nav}>
           {navItems.map(({ label, path: target, icon }) => (
-            <a key={label} href={target} className={styles.navLink(target)}>
+            <Link key={label} to={target} className={styles.navLink(target)}>
               {icon}
               {label}
-            </a>
+            </Link>
           ))}
         </nav>
 

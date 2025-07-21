@@ -13,6 +13,7 @@ import Preview from "../compoents/createBlog/Preview";
 import BlogPostStatus from "../compoents/createBlog/BlogPostStatus";
 
 export default function CreateBlog() {
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
   const nav = useNavigate();
   const stepperRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,7 +38,7 @@ export default function CreateBlog() {
   const handlePublish = async () => {
     try {
       setCurrentPage(5);
-      const res = await axios.post("http://localhost:5000/api/blog/create", formData);
+      const res = await axios.post(`${baseURL}/blog/create`, formData);
       setIsSuccess(res.data?.success);
     } catch (error) {
       setIsSuccess(false);

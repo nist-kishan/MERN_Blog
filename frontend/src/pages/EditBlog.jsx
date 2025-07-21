@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { FilePenLine, Save, ArrowLeft, Loader2 } from "lucide-react";
 
 export default function EditBlog() {
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams();
   const navigate = useNavigate();
   const descRef = useRef(null);
@@ -26,7 +27,7 @@ export default function EditBlog() {
     const fetchBlog = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/api/blog/view/${id}`);
+        const res = await axios.get(`${baseURL}/blog/view/${id}`);
         const data = res.data.data;
         setBlog({
           title: data.title || "",
@@ -79,7 +80,7 @@ export default function EditBlog() {
     setError("");
     setLoading(true);
     try {
-      await axios.put(`http://localhost:5000/api/blog/edit/${id}`, blog);
+      await axios.put(`${baseURL}/blog/edit/${id}`, blog);
       navigate("/my-blogs");
     } catch (err) {
       console.error("Error updating blog:", err);

@@ -35,6 +35,7 @@ const categories = [
 ];
 
 export default function BlogList() {
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
   const [blogs, setBlogs] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [search, setSearch] = useState("");
@@ -52,7 +53,7 @@ export default function BlogList() {
 
   const fetchBlogs = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/blog/list", {
+      const res = await axios.get(`${baseURL}/blog/list`, {
         params: { page, limit: 10, filter: JSON.stringify(filters) },
       });
       setBlogs(res.data.data.blogs || []);

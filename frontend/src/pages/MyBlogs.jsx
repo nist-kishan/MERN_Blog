@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function MyBlogs() {
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
   const navigate = useNavigate();
   const [myBlogs, setMyBlogs] = useState([]);
   const [page, setPage] = useState(1);
@@ -29,7 +30,7 @@ export default function MyBlogs() {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/blog/list", {
+      const res = await axios.get(`${baseURL}/blog/list`, {
         params: { page, limit: 10, filter: JSON.stringify(filter) },
       });
       const { blogs, totalPages } = res.data.data;
@@ -56,7 +57,7 @@ export default function MyBlogs() {
 
     try {
       setDeletingId(blogToDelete._id);
-      await axios.delete(`http://localhost:5000/api/blog/delete/${blogToDelete._id}`);
+      await axios.delete(`${baseURL}/blog/delete/${blogToDelete._id}`);
       setMyBlogs((prev) => prev.filter((blog) => blog._id !== blogToDelete._id));
       setShowDialog(false);
       setBlogToDelete(null);

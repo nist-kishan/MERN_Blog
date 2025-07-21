@@ -1,7 +1,6 @@
 import { Menu } from "lucide-react";
 import clsx from "clsx";
 import { useLocation, Link } from "react-router-dom";
-import { useState } from "react";
 
 const adminLinks = [
   { label: "Dashboard", icon: "📊", link: "/" },

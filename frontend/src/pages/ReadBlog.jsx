@@ -11,6 +11,7 @@ import ReactionButtons from "../compoents/readingBlog/ReactionButtons";
 import CommentSection from "../compoents/readingBlog/CommentSection";
 
 export default function ReadBlog() {
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams();
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
@@ -18,7 +19,7 @@ export default function ReadBlog() {
 
   const fetchBlog = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/blog/view/${id}`);
+      const response = await axios.get(`${baseURL}/blog/view/${id}`);
       const blogData = response?.data?.data;
       console.log(response)
       setBlog(blogData);
