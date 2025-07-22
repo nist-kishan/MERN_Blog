@@ -21,7 +21,6 @@ export const createDocument = async (Model, data) => {
   }
 };
 
-// Find a document by ID with optional population
 export const findById = async (Model, id, populateOptions = []) => {
   try {
     if (!isValidObjectId(id)) {
@@ -39,7 +38,6 @@ export const findById = async (Model, id, populateOptions = []) => {
   }
 };
 
-// Find all documents with optional filters, sorting, population
 export const findAll = async (
   Model,
   filter = {},
@@ -65,7 +63,6 @@ export const findAll = async (
   }
 };
 
-// Update a document by ID
 export const updateById = async (Model, id, updateData) => {
   try {
     if (!isValidObjectId(id)) {
@@ -83,7 +80,6 @@ export const updateById = async (Model, id, updateData) => {
   }
 };
 
-// Soft delete a document by ID (sets isDeleted to true)
 export const softDeleteById = async (Model, id) => {
   try {
     if (!isValidObjectId(id)) {
@@ -102,7 +98,6 @@ export const softDeleteById = async (Model, id) => {
   }
 };
 
-// Permanently delete a document by ID
 export const deleteById = async (Model, id) => {
   try {
     if (!isValidObjectId(id)) {

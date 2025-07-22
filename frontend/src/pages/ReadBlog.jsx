@@ -21,13 +21,14 @@ export default function ReadBlog() {
     try {
       const response = await axios.get(`${baseURL}/blog/view/${id}`);
       const blogData = response?.data?.data;
-      console.log(response)
       setBlog(blogData);
       setLikes(blogData.likes || 0);
     } catch (error) {
       console.error("Failed to fetch blog:", error);
     }
   };
+
+  
 
   useEffect(() => {
     fetchBlog();
@@ -64,7 +65,7 @@ export default function ReadBlog() {
           setDislikes={setDislikes}
         />
 
-        <CommentSection comment={blog.comment} />
+        <CommentSection id={id} />
       </motion.div>
     </div>
   );
