@@ -1,67 +1,87 @@
-import Comment from "./comment.model.js";
+import Comment from "../model/comment.model.js"
 import mongoose from "mongoose";
+import {
+  createDocument,
+  findAll,
+  updateById,
+  softDeleteById,
+} from "../../../utils.js";
 
-
-export const createCommentService = async ({ userId, blogId, text, parentId }) => {
-  if (!userId || !blogId || !text?.trim()) {
+export const createCommentService = async ({
+  user,
+  blog,
+  text,
+  parent=null,
+}) => {
+  if (!user || !blog || !text?.trim()) {
     throw new Error("Missing required fields: userId, blogId, or text.");
   }
 
-  const newComment = new Comment({
-    user: userId,
-    blog: blogId,
+  const newCommentData = {
+    user: user,
+    blog: blog,
     text,
-  });
+    ...(parent && mongoose.Types.ObjectId.isValid(parent)
+      ? { parent: parent }
+      : {}),
+  };
 
-  const savedComment = await newComment.save();
+  const savedComment = await createDocument(Comment, newCommentData);
 
-  // If it's a reply, push this comment to parent's replies
-  if (parentId && mongoose.Types.ObjectId.isValid(parentId)) {
-    await Comment.findByIdAndUpdate(
-      parentId,
-      { $push: { replies: savedComment._id } },
-      { new: true }
-    );
+  if (parent && mongoose.Types.ObjectId.isValid(parent)) {
+    await updateById(Comment, parent, {
+      $push: { replies: savedComment._id },
+    });
   }
 
   return savedComment;
 };
 
-// READ all comments for a blog with user & replies populated
 export const getCommentsByBlogService = async (blogId) => {
   if (!mongoose.Types.ObjectId.isValid(blogId)) {
     throw new Error("Invalid blog ID.");
   }
 
-  const comments = await Comment.find({ blog: blogId, parent: null, isDeleted: false })
-    .populate("user", "name username profilePic")
-    .populate({
-      path: "replies",
-      match: { isDeleted: false },
-      populate: { path: "user", select: "name username profilePic" },
-      options: { sort: { createdAt: 1 } },
-    })
-    .sort({ createdAt: -1 })
-    .lean();
+  const filter = {
+    blog: blogId,
+    parent: null,
+    isDeleted: false,
+  };
 
+  const options = {
+    sort: { createdAt: -1 },
+    populate: [
+      { path: "user", select: "name username profilePic" },
+      {
+        path: "replies",
+        match: { isDeleted: false },
+        populate: { path: "user", select: "name username profilePic" },
+        options: { sort: { createdAt: 1 } },
+      },
+    ],
+  };
+
+  const comments = await findAll(Comment, filter, options);
   return comments;
 };
 
-// UPDATE comment text
+// UPDATE comment
 export const updateCommentService = async (commentId, text) => {
   if (!mongoose.Types.ObjectId.isValid(commentId)) {
     throw new Error("Invalid comment ID.");
   }
 
-  const updated = await Comment.findByIdAndUpdate(
-    commentId,
-    {
-      text,
-      isEdited: true,
-      updatedAt: new Date(),
-    },
-    { new: true }
-  );
+  if (!text?.trim()) {
+    throw new Error("Updated text cannot be empty.");
+  }
+
+  const updateData = {
+    text,
+    isEdited: true,
+    updatedAt: new Date(),
+  };
+
+  const updated = await updateById(Comment, commentId, updateData);
 
   if (!updated) {
     throw new Error("Comment not found or update failed.");
@@ -70,17 +90,13 @@ export const updateCommentService = async (commentId, text) => {
   return updated;
 };
 
-// SOFT DELETE a comment
+// SOFT DELETE comment
 export const deleteCommentService = async (commentId) => {
   if (!mongoose.Types.ObjectId.isValid(commentId)) {
     throw new Error("Invalid comment ID.");
   }
 
-  const deleted = await Comment.findByIdAndUpdate(
-    commentId,
-    { isDeleted: true },
-    { new: true }
-  );
+  const deleted = await softDeleteById(Comment, commentId);
 
   if (!deleted) {
     throw new Error("Comment not found or delete failed.");
